@@ -1,4 +1,5 @@
 #include "include/Application.h"
+#include "include/Database.h"
 
 #include <iostream>
 #include <sstream>
@@ -22,12 +23,16 @@ Application::Application() {}
 Application::~Application() {}
 
 void Application::start() {
+    // init cmds
     commandClear();
 
     std::cout << "try out ";
     std::cout << "\033[33m" << "help" << "\033[0m";
     std::cout << " command!" << std::endl;
 
+    // init db
+    if (!Database::Exist()) Database::Create();
+    
     isRunning = true;
 }
 
@@ -104,6 +109,13 @@ void Application::Warning(std::string w) {
     std::cout << "WARNING: ";
     std::cout << "\033[0m";
     std::cout << w << std::endl;
+}
+
+void Application::Log(std::string l) {
+    std::cout << "\033[34m";
+    std::cout << "LOG: ";
+    std::cout << "\033[0m";
+    std::cout << l << std::endl;
 }
 
 void Application::commandHelp() {

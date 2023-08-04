@@ -37,6 +37,9 @@ public:
     /// @brief Display a warning
     /// @param w warning message
     static void Warning(std::string w);
+    /// @brief Display a log
+    /// @param l log message
+    static void Log(std::string l);
 
 private:
     static const std::map<std::string, Application::Command> STRING_TO_COMMAND;
