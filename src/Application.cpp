@@ -3,8 +3,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
+#include <cstdlib>
 
 bool Application::isRunning = false;
 
@@ -141,18 +140,19 @@ void Application::Log(std::string l) {
 }
 
 void Application::SetClipboardText(const std::string& text) {
-    Display* display = XOpenDisplay(nullptr);
-    if (display) {
-        Window root = DefaultRootWindow(display);
-        Atom clipboard = XInternAtom(display, "CLIPBOARD", 0);
-        XSetSelectionOwner(display, clipboard, root, CurrentTime);
+    #ifdef _WIN32
+        return;
+    #elif __APPLE__
+        return;
+    #elif __linux__
+        FILE* pipe = popen("xclip -selection clipboard", "w");
+        if (!pipe) {
+            return;
+        }
 
-        Atom utf8String = XInternAtom(display, "UTF8_STRING", 0);
-        XChangeProperty(display, root, clipboard, utf8String, 8, PropModeReplace,
-                        reinterpret_cast<const unsigned char*>(text.c_str()), text.length());
-
-        XCloseDisplay(display);
-    }
+        fwrite(text.c_str(), 1, text.size(), pipe);
+        pclose(pipe);
+    #endif
 }
 
 void Application::commandHelp() {

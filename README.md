@@ -15,6 +15,8 @@ CMD application to store and get links to numerous websites.
 This project is a database dedicated to the storage of websites links.
 It alows you to store a link and mark them as scams or not.
 
+The program won't be able to copy links to the clipboard if xclip isn't installed.
+
 ## Technologies
 
 Project is created with:
@@ -22,6 +24,7 @@ Project is created with:
 - CPP
 - SQLITE 3
 - DOCOPT
+- xclip (linux neccessary)
 
 ## Setup
 
@@ -38,6 +41,14 @@ To be able to run the program from everywhere in your terminal, you can choose o
 
 - Add the directory containing your executable to the PATH.
 
+### Extra *(linux users only)*
+
+To install `xclip`, you can run the following command:
+
+```bash
+$ apt install xclip
+```
+
 ## Features
 
 - get link directly in your copyboard
@@ -47,8 +58,8 @@ To be able to run the program from everywhere in your terminal, you can choose o
 
 ### To do
 
-- Auto-copy to clipboard when using get command
-- implement implement a version for windows and apple ?
+- clipboard copy without xclip (linux)
+- implement implement a version for windows and apple ? :)
 
 ## Authors
 
