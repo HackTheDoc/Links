@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 bool Application::isRunning = false;
 
@@ -91,9 +93,29 @@ void Application::parseInput() {
     std::getline(std::cin, raw);
 
     std::stringstream ss(raw);
-    std::string input;
-    while (getline(ss, input, ' ')) {
-        buffer.push_back(input);
+    std::string word;
+    bool insideQuote = false;
+
+    while (getline(ss, word, ' ')) {
+        if (!insideQuote) {
+            if (word.front() == '"' || word.front() == '\'') {
+                // If an opening quote is found, set the flag and remove the quote character
+                insideQuote = true;
+                word = word.substr(1);
+            }
+            buffer.push_back(word);
+        }
+        else {
+            if (word.back() == '"' || word.back() == '\'') {
+                // If a closing quote is found, reset the flag and remove the quote character
+                insideQuote = false;
+                word.pop_back();
+                buffer.back() += ' ' + word; // Append to the last word in the buffer
+            } else {
+                // If we are inside a quote, keep appending to the last word in the buffer
+                buffer.back() += ' ' + word;
+            }
+        }
     }
 }
 
@@ -116,6 +138,21 @@ void Application::Log(std::string l) {
     std::cout << "LOG: ";
     std::cout << "\033[0m";
     std::cout << l << std::endl;
+}
+
+void Application::SetClipboardText(const std::string& text) {
+    Display* display = XOpenDisplay(nullptr);
+    if (display) {
+        Window root = DefaultRootWindow(display);
+        Atom clipboard = XInternAtom(display, "CLIPBOARD", 0);
+        XSetSelectionOwner(display, clipboard, root, CurrentTime);
+
+        Atom utf8String = XInternAtom(display, "UTF8_STRING", 0);
+        XChangeProperty(display, root, clipboard, utf8String, 8, PropModeReplace,
+                        reinterpret_cast<const unsigned char*>(text.c_str()), text.length());
+
+        XCloseDisplay(display);
+    }
 }
 
 void Application::commandHelp() {
@@ -160,13 +197,66 @@ void Application::commandClear() {
 }
 
 void Application::commandGet() {
-    Warning("not yet implemented");
+    if (buffer.size() == 1) {
+        Error("missing name");
+        return;
+    }
+
+    std::string name = buffer.at(1);
+    
+    std::string link = Database::Get(name);
+
+    if (link.size() == 0) {
+        Error("unknown name \""+name+"\"");
+        return;
+    }
+
+    bool scam = false;
+    if (link[0] == '$') {
+        scam = true;
+        link.erase(link.begin());
+    }
+
+    if (scam)
+        Warning("following link marked as scam");
+    std::cout << link << std::endl;
+    SetClipboardText(link);
 }
 
 void Application::commandNew() {
-    Warning("not yet implemented");
+    if (buffer.size() < 3) {
+        Error("missing arguments (name and/or link)");
+        return;
+    }
+
+    std::string name = buffer.at(1);
+    std::string link = buffer.at(2);
+    bool scam = false;
+    if (buffer.size() >= 4) {
+        std::string s = buffer.at(3);
+        if (s == "true" || s == "0" || s == "t")
+            scam = true;
+    }
+
+    bool success = Database::Add(name, link, scam);
+    if (!success)
+        Error("link referencing failed");
 }
 
 void Application::commandRemove() {
-    Warning("not yet implemented");
+    if (buffer.size() == 1) {
+        Error("missing name");
+        return;
+    }
+
+    std::string name = buffer.at(1);
+    std::string link = Database::Get(name);
+    bool success = Database::Remove(name);
+
+    if (!success) {
+        Error("unknown error happened while trying to remove \""+name+"\"");
+        return;
+    }
+
+    std::cout << "successfully removed " << link << std::endl;
 }

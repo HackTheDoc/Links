@@ -40,6 +40,7 @@ public:
     /// @brief Display a log
     /// @param l log message
     static void Log(std::string l);
+    static void SetClipboardText(const std::string& text);
 
 private:
     static const std::map<std::string, Application::Command> STRING_TO_COMMAND;

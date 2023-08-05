@@ -74,7 +74,7 @@ void Database::Create() {
         "'id' INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT,"
         "'name' TEXT,"
         "'link' TEXT,"
-        "'scam' INTEGER,"
+        "'scam' INTEGER"
         ");";
     if (sqlite3_exec(db, table, nullptr, nullptr, nullptr) != SQLITE_OK) {
         Application::Error(sqlite3_errmsg(db));
@@ -87,7 +87,7 @@ void Database::Create() {
 std::string Database::Get(std::string name) {
     sqlite3_open(path.c_str(), &db);
 
-    const char* query = "SELECT links, scam FROM links WHERE name = ?;";
+    const char* query = "SELECT link, scam FROM links WHERE name = ?;";
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);

@@ -32,6 +32,12 @@ $ cd path/to/app
 $ ./links
 ```
 
+To be able to run the program from everywhere in your terminal, you can choose one of the following options :
+
+- Copy the compiled executable to a directory that is already included in the PATH, such as `/usr/local/bin` or `/usr/bin`.
+
+- Add the directory containing your executable to the PATH.
+
 ## Features
 
 - get link directly in your copyboard
@@ -41,7 +47,8 @@ $ ./links
 
 ### To do
 
-- implement every commands :)
+- Auto-copy to clipboard when using get command
+- implement implement a version for windows and apple ?
 
 ## Authors
 
