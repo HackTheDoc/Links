@@ -13,6 +13,8 @@ const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND
     {"exit"     , Application::Command::EXIT    },
     {"clear"    , Application::Command::CLEAR   },
 
+    {"list"     , Application::Command::LIST    },
+    {"ls"       , Application::Command::LIST    },
     {"get"      , Application::Command::GET     },
     {"new"      , Application::Command::NEW     },
     {"remove"   , Application::Command::REMOVE  },
@@ -64,6 +66,9 @@ void Application::eval(std::string input) {
         break;
     case Application::Command::CLEAR:
         commandClear();
+        break;
+    case Application::Command::LIST:
+        commandList();
         break;
     case Application::Command::GET:
         commandGet();
@@ -164,6 +169,7 @@ void Application::commandHelp() {
     std::cout << "  help <command>              Show help of a given command"           << std::endl;
     std::cout << "  exit                        Quit the application"                   << std::endl;
     std::cout << "  clear                       Clear the terminal"                     << std::endl;
+    std::cout << "  list                        List all known name"                    << std::endl;
     std::cout << "  get <name>                  Return a referenced link if founded"    << std::endl;
     std::cout << "  new <name> <link> [scam]    Register a new link"                    << std::endl;
     std::cout << "  remove <name>               Remove a referenced link"               << std::endl;
@@ -194,6 +200,13 @@ void Application::commandClear() {
     std::cout << "| |_____|___|_| \\_|_|\\_\\____/  |" << std::endl;
     std::cout << "|______________________________|" << std::endl;
 
+}
+
+void Application::commandList() {
+    std::vector<std::string> names = Database::List();
+
+    for (auto n : names)
+        std::cout << n << std::endl;
 }
 
 void Application::commandGet() {

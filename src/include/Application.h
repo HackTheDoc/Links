@@ -12,6 +12,7 @@ public:
         EXIT,
         CLEAR,
 
+        LIST,
         GET,
         NEW,
         REMOVE
@@ -60,6 +61,7 @@ private:
     void commandHelp();
     void commandExit();
     void commandClear();
+    void commandList();
     void commandGet();
     void commandNew();
     void commandRemove();

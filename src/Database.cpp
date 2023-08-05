@@ -84,6 +84,26 @@ void Database::Create() {
     sqlite3_close(db);
 }
 
+std::vector<std::string> Database::List() {
+    std::vector<std::string> buffer;
+
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "SELECT name FROM links ORDER BY name ASC;";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+
+    while(sqlite3_step(stmt) == SQLITE_ROW) {
+        buffer.push_back((const char*)sqlite3_column_text(stmt, 0));
+    }
+
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+
+    return buffer;
+}
+
 std::string Database::Get(std::string name) {
     sqlite3_open(path.c_str(), &db);
 
