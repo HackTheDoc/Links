@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <algorithm>
 
-std::string Database::path = "./links-database.db";
+std::string Database::path = "/tmp/links-database.db";
 sqlite3* Database::db = nullptr;
 
 bool Database::Exist() {
