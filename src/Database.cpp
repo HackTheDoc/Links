@@ -71,11 +71,11 @@ void Database::Create() {
 
     const char* table =
         "CREATE TABLE IF NOT EXISTS 'links' ( "
-        "'id' INTEGER UNIQUE NOT NULL,"
+        "'id' INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT,"
         "'name' TEXT,"
         "'link' TEXT,"
         "'scam' INTEGER,"
-	    "PRIMARY KEY('id'));";
+        ");";
     if (sqlite3_exec(db, table, nullptr, nullptr, nullptr) != SQLITE_OK) {
         Application::Error(sqlite3_errmsg(db));
         return;
@@ -85,19 +85,81 @@ void Database::Create() {
 }
 
 std::string Database::Get(std::string name) {
-    return "";
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "SELECT links, scam FROM links WHERE name = ?;";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+
+    int rc = sqlite3_step(stmt);
+    if (rc != SQLITE_ROW || rc == SQLITE_DONE) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return "";
+    }
+
+    std::string data = (const char*)sqlite3_column_text(stmt, 0);
+    
+    int scam = sqlite3_column_int(stmt, 1);
+    if (scam) data.insert(data.begin(), '$'); 
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    return data;
 }
 
 bool Database::Add(std::string name, std::string link, bool scam) {
-    return false;
+    int rc = sqlite3_open(path.c_str(), &db);
+    if (rc != SQLITE_OK)
+        return false;
+
+    const char* query = "INSERT INTO links (name, link, scam) VALUES (?, ?, ?);";
+    sqlite3_stmt* stmt;
+    rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        return false;
+    } 
+
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, link.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int( stmt, 3, scam);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        sqlite3_close(db);
+        return false;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return true;
 }
 
 bool Database::Remove(std::string name) {
-    return false;
-}
+    int rc = sqlite3_open(path.c_str(), &db);
+    if (rc != SQLITE_OK)
+        return false;
+    
+    const char* query = "DELETE FROM links WHERE name = ?;";
+    sqlite3_stmt* stmt;
+    rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        return false;
+    } 
 
-int Database::TableExistCallback(void* table_exists_ptr, int argc, char** argv, char** colNames) {
-    bool* exist = static_cast<bool*>(table_exists_ptr);
-    *exist = (argc > 0 && argv[0] != nullptr);
-    return 0;
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        sqlite3_close(db);
+        return false;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return true;
 }

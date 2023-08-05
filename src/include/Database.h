@@ -14,8 +14,4 @@ public:
     static std::string Get(std::string name);
     static bool Add(std::string name, std::string link, bool scam);
     static bool Remove(std::string name);
-
-private:
-    static int TableExistCallback(void* table_exists_ptr, int argc, char** argv, char** colNames);
-    static int ColumnsCallback(void* columns_ptr, int argc, char** argv, char** colNames);
 };
