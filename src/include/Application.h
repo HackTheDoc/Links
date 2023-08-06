@@ -13,9 +13,12 @@ public:
         CLEAR,
 
         LIST,
+        SIZE,
+
         GET,
         NEW,
-        REMOVE
+        REMOVE,
+        EDIT
     };
 
     static bool isRunning;
@@ -61,8 +64,12 @@ private:
     void commandHelp();
     void commandExit();
     void commandClear();
+
     void commandList();
+    void commandSize();
+
     void commandGet();
     void commandNew();
     void commandRemove();
+    void commandEdit();
 };

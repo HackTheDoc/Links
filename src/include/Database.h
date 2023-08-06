@@ -13,6 +13,7 @@ public:
 
     static void Create();
     static std::vector<std::string> List();
+    static int Size();
     static std::string Get(std::string name);
     static bool Add(std::string name, std::string link, bool scam);
     static bool Remove(std::string name);

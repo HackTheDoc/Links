@@ -104,6 +104,26 @@ std::vector<std::string> Database::List() {
     return buffer;
 }
 
+int Database::Size() {
+    int size = 0;
+
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "SELECT COUNT(*) FROM links;";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        size = sqlite3_column_int(stmt, 0);
+    }
+
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+
+    return size;
+}
+
 std::string Database::Get(std::string name) {
     sqlite3_open(path.c_str(), &db);
 

@@ -15,10 +15,14 @@ const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND
 
     {"list"     , Application::Command::LIST    },
     {"ls"       , Application::Command::LIST    },
+    {"size"     , Application::Command::SIZE    },
+    {"sz"       , Application::Command::SIZE    },
+
     {"get"      , Application::Command::GET     },
     {"new"      , Application::Command::NEW     },
     {"remove"   , Application::Command::REMOVE  },
-    {"rm"       , Application::Command::REMOVE  }
+    {"rm"       , Application::Command::REMOVE  },
+    {"edit"     , Application::Command::EDIT    }
 };
 
 Application::Application() {}
@@ -70,6 +74,9 @@ void Application::eval(std::string input) {
     case Application::Command::LIST:
         commandList();
         break;
+    case Application::Command::SIZE:
+        commandSize();
+        break;
     case Application::Command::GET:
         commandGet();
         break;
@@ -78,6 +85,9 @@ void Application::eval(std::string input) {
         break;
     case Application::Command::REMOVE:
         commandRemove();
+        break;
+    case Application::Command::EDIT:
+        commandEdit();
         break;
     case Application::Command::UNKNOWN:
     default:
@@ -161,18 +171,29 @@ void Application::SetClipboardText(const std::string& text) {
 }
 
 void Application::commandHelp() {
-    std::cout << "Usage:"                                                               << std::endl;
-    std::cout << "  <command> [options]"                                                << std::endl;
+    std::cout << "Usage:"                       << std::endl;
+    std::cout << "  <command> [options]"        << std::endl;
 
-    std::cout << "Command:"                                                             << std::endl;
-    std::cout << "  help                        Show this screen"                       << std::endl;
-    std::cout << "  help <command>              Show help of a given command"           << std::endl;
-    std::cout << "  exit                        Quit the application"                   << std::endl;
-    std::cout << "  clear                       Clear the terminal"                     << std::endl;
-    std::cout << "  list                        List all known name"                    << std::endl;
-    std::cout << "  get <name>                  Return a referenced link if founded"    << std::endl;
-    std::cout << "  new <name> <link> [scam]    Register a new link"                    << std::endl;
-    std::cout << "  remove <name>               Remove a referenced link"               << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "Command:"                     << std::endl;
+    std::cout << "  help"                       << std::endl;
+    std::cout << "  help <command>"             << std::endl;
+    std::cout << "  exit"                       << std::endl;
+    std::cout << "  clear"                      << std::endl;
+
+    std::cout << std::endl;
+
+    std::cout << "  list"                       << std::endl;
+    std::cout << "  size"                       << std::endl;
+    
+    std::cout << std::endl;
+
+    std::cout << "  get <name>"                 << std::endl;
+    std::cout << "  new <name> <link> [scam]"   << std::endl;
+    std::cout << "  remove <name>"              << std::endl;
+    std::cout << "  edit <name> -l <link>"      << std::endl;
+    std::cout << "              -s <scam>"      << std::endl;
 }
 
 void Application::commandExit() {
@@ -207,6 +228,10 @@ void Application::commandList() {
 
     for (auto n : names)
         std::cout << n << std::endl;
+}
+
+void Application::commandSize() {
+    std::cout << Database::Size() << std::endl;
 }
 
 void Application::commandGet() {
@@ -272,4 +297,8 @@ void Application::commandRemove() {
     }
 
     std::cout << "successfully removed " << link << std::endl;
+}
+
+void Application::commandEdit() {
+    Warning("not yet implemented");
 }
