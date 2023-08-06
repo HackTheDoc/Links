@@ -203,3 +203,43 @@ bool Database::Remove(std::string name) {
     sqlite3_close(db);
     return true;
 }
+
+void Database::SetLink(std::string name, std::string link) {
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "UPDATE links SET link = ? WHERE name = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, link.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
+
+    int rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        Application::Error("failed to update the link");
+    }
+    
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+}
+
+void Database::SetScam(std::string name, bool scam) {
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "UPDATE links SET scam = ? WHERE name = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
+
+    sqlite3_bind_int( stmt, 1, scam);
+    sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
+
+    int rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        Application::Error("failed to update the scam flag");
+    }
+    
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+}

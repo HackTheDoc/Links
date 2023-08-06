@@ -22,7 +22,7 @@ const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND
     {"new"      , Application::Command::NEW     },
     {"remove"   , Application::Command::REMOVE  },
     {"rm"       , Application::Command::REMOVE  },
-    {"edit"     , Application::Command::EDIT    }
+    {"set"      , Application::Command::SET     }
 };
 
 Application::Application() {}
@@ -86,8 +86,8 @@ void Application::eval(std::string input) {
     case Application::Command::REMOVE:
         commandRemove();
         break;
-    case Application::Command::EDIT:
-        commandEdit();
+    case Application::Command::SET:
+        commandSet();
         break;
     case Application::Command::UNKNOWN:
     default:
@@ -192,8 +192,8 @@ void Application::commandHelp() {
     std::cout << "  get <name>"                 << std::endl;
     std::cout << "  new <name> <link> [scam]"   << std::endl;
     std::cout << "  remove <name>"              << std::endl;
-    std::cout << "  edit <name> -l <link>"      << std::endl;
-    std::cout << "              -s <scam>"      << std::endl;
+    std::cout << "  set <name> -l <link>"       << std::endl;
+    std::cout << "             -s <scam>"       << std::endl;
 }
 
 void Application::commandExit() {
@@ -289,6 +289,9 @@ void Application::commandRemove() {
 
     std::string name = buffer.at(1);
     std::string link = Database::Get(name);
+    if (link[0] == '$')
+        link.erase(link.begin());
+
     bool success = Database::Remove(name);
 
     if (!success) {
@@ -299,6 +302,37 @@ void Application::commandRemove() {
     std::cout << "successfully removed " << link << std::endl;
 }
 
-void Application::commandEdit() {
-    Warning("not yet implemented");
+void Application::commandSet() {
+    if (buffer.size() < 4) {
+        Error("missing parameter(s)");
+        return;
+    }
+
+    std::string name = buffer.at(1);
+
+    if (Database::Get(name) == "") {
+        Error("unknown name \""+name+"\"");
+        return;
+    }
+
+    std::string cmd = buffer.at(2);
+
+    if (cmd == "-l") {
+        std::string link = buffer.at(3);
+        
+        Database::SetLink(name, link);
+    }
+    else if (cmd == "-s") {
+        std::string s = buffer.at(3);
+
+        if (s == "true" || s == "0" || s == "t")
+            Database::SetScam(name, true);
+        else if (s == "false" || s == "1" || s == "f")
+            Database::SetScam(name, false);
+        else
+            Error("invalid value \""+s+"\"");
+    }
+    else {
+        Error("unknown flag \""+cmd+"\". Please use \"-l\" or \"-s\".");
+    }
 }

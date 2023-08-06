@@ -18,7 +18,7 @@ public:
         GET,
         NEW,
         REMOVE,
-        EDIT
+        SET
     };
 
     static bool isRunning;
@@ -71,5 +71,5 @@ private:
     void commandGet();
     void commandNew();
     void commandRemove();
-    void commandEdit();
+    void commandSet();
 };
