@@ -30,15 +30,23 @@ Application::Application() {}
 Application::~Application() {}
 
 void Application::start() {
+    // init db
+    const char* homeDir = std::getenv("HOME");
+    if (homeDir) {
+        std::string home(homeDir);
+        Database::SetPath(home+"/.links/");
+    }
+    else
+        Database::SetPath("/tmp/links-database.db");
+
+    if (!Database::Exist()) Database::Create();
+
     // init cmds
     commandClear();
 
     std::cout << "try out ";
     std::cout << "\033[33m" << "help" << "\033[0m";
     std::cout << " command!" << std::endl;
-
-    // init db
-    if (!Database::Exist()) Database::Create();
     
     isRunning = true;
 }

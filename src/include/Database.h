@@ -9,6 +9,8 @@ public:
     static std::string path;
     static sqlite3* db;
 
+    static void SetPath(std::string p);
+
     static bool Exist();
 
     static void Create();

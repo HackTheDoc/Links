@@ -4,8 +4,20 @@
 #include <filesystem>
 #include <algorithm>
 
-std::string Database::path = "/tmp/links-database.db";
+#ifdef _WIN32 // Windows
+    #include <direct.h>
+    #define MKDIR(dir) _mkdir(dir)
+#else // POSIX (Linux, macOS, etc.)
+    #include <sys/stat.h>
+    #define MKDIR(dir) mkdir(dir, 0777)
+#endif
+
+std::string Database::path = "/tmp/.links/";
 sqlite3* Database::db = nullptr;
+
+void Database::SetPath(std::string p) {
+    path = p;
+}
 
 bool Database::Exist() {
     // check existence
@@ -67,6 +79,9 @@ bool Database::Exist() {
 }
 
 void Database::Create() {
+    MKDIR(path.c_str());
+    path += "database.db";
+
     sqlite3_open(path.c_str(), &db);
 
     const char* table =
