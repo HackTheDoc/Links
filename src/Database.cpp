@@ -111,30 +111,29 @@ std::vector<std::string> Database::List(bool chatroom, bool forum, bool library,
     std::string query = "SELECT name FROM links ";
     if (chatroom)
         query += "WHERE chatroom = ? ";
-    if (forum)
-        query += "AND forum = ? ";
-    if (library)
-        query += "AND library = ? ";
-    if (scam)
-        query += "AND scam = ? ";
-    if (wiki)
-        query += "AND wiki = ? ";
+    else if (forum)
+        query += "WHERE forum = ? ";
+    else if (library)
+        query += "WHERE library = ? ";
+    else if (scam)
+        query += "WHERE scam = ? ";
+    else if (wiki)
+        query += "WHERE wiki = ? ";
         
     query += "ORDER BY name ASC;";
     
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
-    int i = 1;
     if (chatroom)
-        sqlite3_bind_int(stmt, i++, chatroom);
-    if (forum)
-        sqlite3_bind_int(stmt, i++, forum);
-    if (library)
-        sqlite3_bind_int(stmt, i++, library);
-    if (scam)
-        sqlite3_bind_int(stmt, i++, scam);
-    if (wiki)
-        sqlite3_bind_int(stmt, i++, wiki);
+        sqlite3_bind_int(stmt, 1, chatroom);
+    else if (forum)
+        sqlite3_bind_int(stmt, 1, forum);
+    else if (library)
+        sqlite3_bind_int(stmt, 1, library);
+    else if (scam)
+        sqlite3_bind_int(stmt, 1, scam);
+    else if (wiki)
+        sqlite3_bind_int(stmt, 1, wiki);
 
     while(sqlite3_step(stmt) == SQLITE_ROW) {
         buffer.push_back((const char*)sqlite3_column_text(stmt, 0));

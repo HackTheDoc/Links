@@ -301,10 +301,25 @@ void Application::commandUpgrade() {
 void Application::commandList() {
     std::vector<std::string> names;
 
-    if (buffer.size() > 1)
-        Warning("not yet implemented");
-    else
-        names = Database::List();
+    if (buffer.size() > 1) {
+        std::string p = buffer[1];
+
+        if (p == "chatroom")
+            names = Database::List(true , false, false, false, false);
+        else if (p == "forum")
+            names = Database::List(false, true , false, false, false);
+        else if (p == "library")
+            names = Database::List(false, false, true , false, false);
+        else if (p == "scam")
+            names = Database::List(false, false, false, true , false);
+        else if (p == "wiki")
+            names = Database::List(false, false, false, false, true );
+        else
+            Warning("unknown parameter \""+p+"\"");
+    }
+    else {
+        names = Database::List(false, false, false, false, false);
+    }
 
     for (auto n : names)
         std::cout << n << std::endl;
