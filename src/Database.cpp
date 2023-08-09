@@ -74,7 +74,6 @@ bool Database::Exist() {
         if (columns[i] != toCheck[i])
             return false;
     }
-    
     return true;
 }
 
@@ -90,7 +89,11 @@ void Database::Create() {
         "'id' INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT,"
         "'name' TEXT,"
         "'link' TEXT,"
-        "'scam' INTEGER"
+        "'chatroom' INTEGER,"
+        "'forum' INTEGER,"
+        "'library' INTEGER,"
+        "'scam' INTEGER,"
+        "'wiki' INTEGER"
         ");";
     if (sqlite3_exec(db, table, nullptr, nullptr, nullptr) != SQLITE_OK) {
         Application::Error(sqlite3_errmsg(db));
@@ -100,14 +103,38 @@ void Database::Create() {
     sqlite3_close(db);
 }
 
-std::vector<std::string> Database::List() {
+std::vector<std::string> Database::List(bool chatroom, bool forum, bool library, bool scam, bool wiki) {
     std::vector<std::string> buffer;
 
     sqlite3_open(path.c_str(), &db);
 
-    const char* query = "SELECT name FROM links ORDER BY name ASC;";
+    std::string query = "SELECT name FROM links ";
+    if (chatroom)
+        query += "WHERE chatroom = ? ";
+    if (forum)
+        query += "AND forum = ? ";
+    if (library)
+        query += "AND library = ? ";
+    if (scam)
+        query += "AND scam = ? ";
+    if (wiki)
+        query += "AND wiki = ? ";
+        
+    query += "ORDER BY name ASC;";
+    
     sqlite3_stmt* stmt;
-    sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    int i = 1;
+    if (chatroom)
+        sqlite3_bind_int(stmt, i++, chatroom);
+    if (forum)
+        sqlite3_bind_int(stmt, i++, forum);
+    if (library)
+        sqlite3_bind_int(stmt, i++, library);
+    if (scam)
+        sqlite3_bind_int(stmt, i++, scam);
+    if (wiki)
+        sqlite3_bind_int(stmt, i++, wiki);
 
     while(sqlite3_step(stmt) == SQLITE_ROW) {
         buffer.push_back((const char*)sqlite3_column_text(stmt, 0));
@@ -166,7 +193,7 @@ std::string Database::Get(std::string name) {
     return data;
 }
 
-bool Database::Add(std::string name, std::string link, bool scam) {
+bool Database::Add(std::string name, std::string link, bool chatroom, bool forum, bool library, bool scam, bool wiki) {
     int rc = sqlite3_open(path.c_str(), &db);
     if (rc != SQLITE_OK)
         return false;

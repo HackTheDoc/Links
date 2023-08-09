@@ -22,15 +22,14 @@ public:
         SET
     };
 
-    static std::string version;
+    static const std::string version;
     static bool isRunning;
 
     Application();
     ~Application();
 
     /// @brief Initialize the application (check database existence)
-    /// @param v version of the application
-    void start(std::string v);
+    void start();
     /// @brief Keep the application running
     void run();
     /// @brief Kill running proccesses

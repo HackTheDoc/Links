@@ -5,7 +5,7 @@
 #include <sstream>
 #include <cstdlib>
 
-std::string Application::version = "01";
+const std::string Application::version = "2.0";
 bool Application::isRunning = false;
 
 const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND {
@@ -31,9 +31,7 @@ Application::Application() {}
 
 Application::~Application() {}
 
-void Application::start(std::string v) {
-    version = v;
-
+void Application::start() {
     // init db
     const char* homeDir = std::getenv("HOME");
     if (homeDir) {
@@ -358,7 +356,7 @@ void Application::commandNew() {
             scam = true;
     }
 
-    bool success = Database::Add(name, link, scam);
+    bool success = Database::Add(name, link, false, false, false, scam, false);
     if (!success)
         Error("link referencing failed");
 }
