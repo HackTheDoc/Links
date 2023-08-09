@@ -5,6 +5,8 @@
 
 Application app;
 
+std::string version = "1";
+
 const char* USAGE =
 R"(Links.
 
@@ -21,9 +23,9 @@ int main(int argc, const char* argv[]) {
         = docopt::docopt(USAGE,
                         {argv + 1, argv + argc},
                         true,
-                        "links 0.1");
+                        "links "+version+".0");
 
-    app.start();
+    app.start("1");
 
     while (Application::isRunning) app.run();
 

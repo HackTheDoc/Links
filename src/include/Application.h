@@ -12,6 +12,7 @@ public:
         EXIT,
         CLEAR,
 
+        UPGRADE,
         LIST,
         SIZE,
 
@@ -21,13 +22,15 @@ public:
         SET
     };
 
+    static std::string version;
     static bool isRunning;
 
     Application();
     ~Application();
 
     /// @brief Initialize the application (check database existence)
-    void start();
+    /// @param v version of the application
+    void start(std::string v);
     /// @brief Keep the application running
     void run();
     /// @brief Kill running proccesses
@@ -72,4 +75,6 @@ private:
     void commandNew();
     void commandRemove();
     void commandSet();
+
+    void commandUpgrade();
 };

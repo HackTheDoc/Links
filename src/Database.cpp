@@ -79,8 +79,9 @@ bool Database::Exist() {
 }
 
 void Database::Create() {
-    MKDIR(path.c_str());
-    path += "database.db";
+    if (path != "/tmp/links.db")
+        MKDIR(path.c_str());
+    path += "database-"+Application::version+".db";
 
     sqlite3_open(path.c_str(), &db);
 

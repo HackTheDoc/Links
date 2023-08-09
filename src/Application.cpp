@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cstdlib>
 
+std::string Application::version = "01";
 bool Application::isRunning = false;
 
 const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND {
@@ -13,6 +14,7 @@ const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND
     {"exit"     , Application::Command::EXIT    },
     {"clear"    , Application::Command::CLEAR   },
 
+    {"upgrade"  , Application::Command::UPGRADE },
     {"list"     , Application::Command::LIST    },
     {"ls"       , Application::Command::LIST    },
     {"size"     , Application::Command::SIZE    },
@@ -29,7 +31,9 @@ Application::Application() {}
 
 Application::~Application() {}
 
-void Application::start() {
+void Application::start(std::string v) {
+    version = v;
+
     // init db
     const char* homeDir = std::getenv("HOME");
     if (homeDir) {
@@ -37,7 +41,7 @@ void Application::start() {
         Database::SetPath(home+"/.links/");
     }
     else
-        Database::SetPath("/tmp/links-database.db");
+        Database::SetPath("/tmp/links.db");
 
     if (!Database::Exist()) Database::Create();
 
@@ -78,6 +82,9 @@ void Application::eval(std::string input) {
         break;
     case Application::Command::CLEAR:
         commandClear();
+        break;
+    case Application::Command::UPGRADE:
+        commandUpgrade();
         break;
     case Application::Command::LIST:
         commandList();
@@ -128,7 +135,7 @@ void Application::parseInput() {
             buffer.push_back(word);
         }
         else {
-            if (word.back() == '"' || word.back() == '\'') {
+            if (word.back() == '"') {
                 // If a closing quote is found, reset the flag and remove the quote character
                 insideQuote = false;
                 word.pop_back();
@@ -179,6 +186,60 @@ void Application::SetClipboardText(const std::string& text) {
 }
 
 void Application::commandHelp() {
+    if (buffer.size() > 1) {
+        Application::Command c = convertToCommand(buffer.at(1));
+
+        switch (c) {
+        case Application::Command::HELP:
+            std::cout << "help              List of commands"                           << std::endl;
+            std::cout << "help <command>    Display help of a specific command"         << std::endl;
+            break;
+        case Application::Command::EXIT:
+            std::cout << "exit              Close the application"                      << std::endl;
+            break;
+        case Application::Command::CLEAR:
+            std::cout << "clear             Clear the terminal"                         << std::endl;
+            break;
+        case Application::Command::UPGRADE:
+            std::cout << "upgrade           Upgrade an old db to a new one"             << std::endl;
+            break;
+        case Application::Command::LIST:
+            std::cout << "list              List every link registered (their name)"    << std::endl;
+            std::cout << "list chatroom     List every link to a chatroom"              << std::endl;
+            std::cout << "list forum        List every link to a forum"                 << std::endl;
+            std::cout << "list library      List every link to a library"               << std::endl;
+            std::cout << "list wiki         List every link to a forum"                 << std::endl;
+            break;
+        case Application::Command::SIZE:
+            std::cout << "size              Current size of the dataase"                << std::endl;
+            break;
+        case Application::Command::GET:
+            std::cout << "get <name>        Get a link by it's name"                    << std::endl;
+            std::cout << "                  -> copied in clipboard"                     << std::endl;
+            break;
+        case Application::Command::NEW:
+            std::cout << "new <name> <link> [options] Add a new link with possible options" << std::endl;
+            std::cout << std::endl;
+            std::cout << "Warning:" << std::endl;
+            std::cout << "option must be like '00000' where each 0 can be replaced by a 1 and stand for true or false." << std::endl;
+            std::cout << "The flag order is : [chatroom, forum, library, scam, wiki]" << std::endl;
+            break;
+        case Application::Command::REMOVE:
+            std::cout << "remove <name>     Remove an existing link from the database"  << std::endl;
+            break;
+        case Application::Command::SET:
+            std::cout << "set <name> -l <link>  Set the link to a new one"              << std::endl;
+            std::cout << "           -s <scam>  Set wether the link is a scam or not"   << std::endl;
+            break;
+        case Application::Command::UNKNOWN:
+        default:
+            break;
+        }
+
+        if (c != Application::Command::UNKNOWN)
+            return;
+    }
+
     std::cout << "Usage:"                       << std::endl;
     std::cout << "  <command> [options]"        << std::endl;
 
@@ -202,6 +263,10 @@ void Application::commandHelp() {
     std::cout << "  remove <name>"              << std::endl;
     std::cout << "  set <name> -l <link>"       << std::endl;
     std::cout << "             -s <scam>"       << std::endl;
+
+    std::cout << std::endl;
+
+    std::cout << "  upgrade"                    << std::endl;
 }
 
 void Application::commandExit() {
@@ -231,8 +296,17 @@ void Application::commandClear() {
 
 }
 
+void Application::commandUpgrade() {
+    Warning("not yet implemented");
+}
+
 void Application::commandList() {
-    std::vector<std::string> names = Database::List();
+    std::vector<std::string> names;
+
+    if (buffer.size() > 1)
+        Warning("not yet implemented");
+    else
+        names = Database::List();
 
     for (auto n : names)
         std::cout << n << std::endl;
