@@ -10,20 +10,33 @@ bool Application::isRunning = false;
 
 const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND {
     {"unknown"  , Application::Command::UNKNOWN },
+    
+    // terminal cmds
     {"help"     , Application::Command::HELP    },
-    {"exit"     , Application::Command::EXIT    },
-    {"clear"    , Application::Command::CLEAR   },
 
+    {"exit"     , Application::Command::EXIT    },
+    
+    {"clear"    , Application::Command::CLEAR   },
+    {"cls"      , Application::Command::CLEAR   },
+
+    // database pragma cmds
     {"upgrade"  , Application::Command::UPGRADE },
+
     {"list"     , Application::Command::LIST    },
     {"ls"       , Application::Command::LIST    },
+    
     {"size"     , Application::Command::SIZE    },
     {"sz"       , Application::Command::SIZE    },
 
+    // database manipulation cmds
     {"get"      , Application::Command::GET     },
+    
     {"new"      , Application::Command::NEW     },
+    {"add"      , Application::Command::NEW     },
+
     {"remove"   , Application::Command::REMOVE  },
     {"rm"       , Application::Command::REMOVE  },
+
     {"set"      , Application::Command::SET     }
 };
 
@@ -256,6 +269,7 @@ void Application::commandHelp() {
 
     std::cout << std::endl;
 
+    std::cout << "  upgrade"                    << std::endl;
     std::cout << "  list"                       << std::endl;
     std::cout << "  size"                       << std::endl;
     
@@ -270,10 +284,6 @@ void Application::commandHelp() {
     std::cout << "             -lib <value>"    << std::endl;
     std::cout << "             -s <value>"      << std::endl;
     std::cout << "             -w <value>"      << std::endl;
-
-    std::cout << std::endl;
-
-    std::cout << "  upgrade"                    << std::endl;
 }
 
 void Application::commandExit() {
