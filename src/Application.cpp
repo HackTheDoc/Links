@@ -391,23 +391,25 @@ void Application::commandNew() {
 
 void Application::commandRemove() {
     if (buffer.size() == 1) {
-        Error("missing name");
+        Error("missing name parameter");
         return;
     }
 
-    std::string name = buffer.at(1);
-    std::string link = Database::Get(name);
-    if (link[0] == '$')
-        link.erase(link.begin());
+    for (int i = 1; i < (int)buffer.size(); i++) {
+        std::string name = buffer.at(i);
+        std::string link = Database::Get(name);
+        if (link[0] == '$')
+            link.erase(link.begin());
 
-    bool success = Database::Remove(name);
+        bool success = Database::Remove(name);
 
-    if (!success) {
-        Error("unknown error happened while trying to remove \""+name+"\"");
-        return;
+        if (!success) {
+            Error("unknown error happened while trying to remove \""+name+"\"");
+            return;
+        }
+
+        std::cout << "successfully removed " << link << std::endl;
     }
-
-    std::cout << "successfully removed " << link << std::endl;
 }
 
 void Application::commandSet() {
