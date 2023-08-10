@@ -262,7 +262,7 @@ void Application::commandHelp() {
     std::cout << std::endl;
 
     std::cout << "  get <name>"                 << std::endl;
-    std::cout << "  new <name> <link> [scam]"   << std::endl;
+    std::cout << "  new <name> <link> [options]"<< std::endl;
     std::cout << "  remove <name>"              << std::endl;
     std::cout << "  set <name> -l <link>"       << std::endl;
     std::cout << "             -c <value>"      << std::endl;
@@ -373,14 +373,18 @@ void Application::commandNew() {
 
     std::string name = buffer.at(1);
     std::string link = buffer.at(2);
-    bool scam = false;
+    bool option[5] = {false, false, false, false, false};
+
     if (buffer.size() >= 4) {
-        std::string s = buffer.at(3);
-        if (s == "true" || s == "0" || s == "t")
-            scam = true;
+        // [chatroom, forum, library, scam, wiki]
+        std::string o = buffer.at(3);
+        
+        for (int i = 0; i < 5; i++)
+            if (o[i] == '0')
+                option[i] = true;
     }
 
-    bool success = Database::Add(name, link, false, false, false, scam, false);
+    bool success = Database::Add(name, link, option[0], option[1], option[2], option[3], option[4]);
     if (!success)
         Error("link referencing failed");
 }

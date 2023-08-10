@@ -197,7 +197,7 @@ bool Database::Add(std::string name, std::string link, bool chatroom, bool forum
     if (rc != SQLITE_OK)
         return false;
 
-    const char* query = "INSERT INTO links (name, link, scam) VALUES (?, ?, ?);";
+    const char* query = "INSERT INTO links (name, link, chatroom, forum, library, scam, wiki) VALUES (?, ?, ?, ?, ?, ?, ?);";
     sqlite3_stmt* stmt;
     rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
@@ -207,7 +207,11 @@ bool Database::Add(std::string name, std::string link, bool chatroom, bool forum
 
     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, link.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int( stmt, 3, scam);
+    sqlite3_bind_int( stmt, 3, chatroom);
+    sqlite3_bind_int( stmt, 4, forum);
+    sqlite3_bind_int( stmt, 5, library);
+    sqlite3_bind_int( stmt, 6, scam);
+    sqlite3_bind_int( stmt, 7, wiki);
 
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
