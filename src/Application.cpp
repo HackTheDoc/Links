@@ -206,6 +206,7 @@ void Application::commandHelp() {
             std::cout << "list chatroom     List every link to a chatroom"              << std::endl;
             std::cout << "list forum        List every link to a forum"                 << std::endl;
             std::cout << "list library      List every link to a library"               << std::endl;
+            std::cout << "list scam         List every link marked as scam"             << std::endl;
             std::cout << "list wiki         List every link to a forum"                 << std::endl;
             break;
         case Application::Command::SIZE:
@@ -226,8 +227,12 @@ void Application::commandHelp() {
             std::cout << "remove <name>     Remove an existing link from the database"  << std::endl;
             break;
         case Application::Command::SET:
-            std::cout << "set <name> -l <link>  Set the link to a new one"              << std::endl;
-            std::cout << "           -s <scam>  Set wether the link is a scam or not"   << std::endl;
+            std::cout << "set <name> -l <link>      Set the link to a new one"              << std::endl;
+            std::cout << "           -c <value>     Set wether the link is a chatroom or not"   << std::endl;
+            std::cout << "           -f <value>     Set wether the link is a forum or not"   << std::endl;
+            std::cout << "           -lib <value>   Set wether the link is a library or not"   << std::endl;
+            std::cout << "           -s <value>     Set wether the link is a scam or not"   << std::endl;
+            std::cout << "           -w <value>     Set wether the link is a wiki or not"   << std::endl;
             break;
         case Application::Command::UNKNOWN:
         default:
@@ -260,7 +265,11 @@ void Application::commandHelp() {
     std::cout << "  new <name> <link> [scam]"   << std::endl;
     std::cout << "  remove <name>"              << std::endl;
     std::cout << "  set <name> -l <link>"       << std::endl;
-    std::cout << "             -s <scam>"       << std::endl;
+    std::cout << "             -c <value>"      << std::endl;
+    std::cout << "             -f <value>"      << std::endl;
+    std::cout << "             -lib <value>"    << std::endl;
+    std::cout << "             -s <value>"      << std::endl;
+    std::cout << "             -w <value>"      << std::endl;
 
     std::cout << std::endl;
 
@@ -416,6 +425,36 @@ void Application::commandSet() {
         std::string link = buffer.at(3);
         
         Database::SetLink(name, link);
+    } 
+    else if (cmd == "-c") {
+        std::string s = buffer.at(3);
+
+        if (s == "true" || s == "0" || s == "t")
+            Database::SetChatroom(name, true);
+        else if (s == "false" || s == "1" || s == "f")
+            Database::SetChatroom(name, false);
+        else
+            Error("invalid value \""+s+"\"");
+    }
+    else if (cmd == "-f") {
+        std::string s = buffer.at(3);
+
+        if (s == "true" || s == "0" || s == "t")
+            Database::SetForum(name, true);
+        else if (s == "false" || s == "1" || s == "f")
+            Database::SetForum(name, false);
+        else
+            Error("invalid value \""+s+"\"");
+    }
+    else if (cmd == "-lib") {
+        std::string s = buffer.at(3);
+
+        if (s == "true" || s == "0" || s == "t")
+            Database::SetLibrary(name, true);
+        else if (s == "false" || s == "1" || s == "f")
+            Database::SetLibrary(name, false);
+        else
+            Error("invalid value \""+s+"\"");
     }
     else if (cmd == "-s") {
         std::string s = buffer.at(3);
@@ -424,6 +463,16 @@ void Application::commandSet() {
             Database::SetScam(name, true);
         else if (s == "false" || s == "1" || s == "f")
             Database::SetScam(name, false);
+        else
+            Error("invalid value \""+s+"\"");
+    }
+    else if (cmd == "-w") {
+        std::string s = buffer.at(3);
+
+        if (s == "true" || s == "0" || s == "t")
+            Database::SetWiki(name, true);
+        else if (s == "false" || s == "1" || s == "f")
+            Database::SetWiki(name, false);
         else
             Error("invalid value \""+s+"\"");
     }

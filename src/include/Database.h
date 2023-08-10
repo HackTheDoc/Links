@@ -20,5 +20,9 @@ public:
     static bool Add(std::string name, std::string link, bool chatroom, bool forum, bool library, bool scam, bool wiki);
     static bool Remove(std::string name);
     static void SetLink(std::string name, std::string link);
+    static void SetChatroom(std::string name, bool scam);
+    static void SetForum(std::string name, bool scam);
+    static void SetLibrary(std::string name, bool scam);
     static void SetScam(std::string name, bool scam);
+    static void SetWiki(std::string name, bool scam);
 };

@@ -266,19 +266,99 @@ void Database::SetLink(std::string name, std::string link) {
     sqlite3_close(db);
 }
 
-void Database::SetScam(std::string name, bool scam) {
+void Database::SetChatroom(std::string name, bool value) {
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "UPDATE links SET chatroom = ? WHERE name = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
+
+    sqlite3_bind_int( stmt, 1, value);
+    sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
+
+    int rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        Application::Error("failed to update the chatroom flag");
+    }
+    
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+}
+
+void Database::SetForum(std::string name, bool value) {
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "UPDATE links SET forum = ? WHERE name = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
+
+    sqlite3_bind_int( stmt, 1, value);
+    sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
+
+    int rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        Application::Error("failed to update the forum flag");
+    }
+    
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+}
+
+void Database::SetLibrary(std::string name, bool value) {
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "UPDATE links SET library = ? WHERE name = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
+
+    sqlite3_bind_int( stmt, 1, value);
+    sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
+
+    int rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        Application::Error("failed to update the library flag");
+    }
+    
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+}
+
+void Database::SetScam(std::string name, bool value) {
     sqlite3_open(path.c_str(), &db);
 
     const char* query = "UPDATE links SET scam = ? WHERE name = ?";
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
 
-    sqlite3_bind_int( stmt, 1, scam);
+    sqlite3_bind_int( stmt, 1, value);
     sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
 
     int rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
         Application::Error("failed to update the scam flag");
+    }
+    
+    sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+}
+
+void Database::SetWiki(std::string name, bool value) {
+    sqlite3_open(path.c_str(), &db);
+
+    const char* query = "UPDATE links SET wiki = ? WHERE name = ?";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
+
+    sqlite3_bind_int( stmt, 1, value);
+    sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
+
+    int rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        Application::Error("failed to update the wiki flag");
     }
     
     sqlite3_finalize(stmt);
