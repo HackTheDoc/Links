@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <filesystem>
 
 const std::string Application::version = "2.0";
 bool Application::isRunning = false;
@@ -314,7 +315,27 @@ void Application::commandClear() {
 }
 
 void Application::commandUpgrade() {
-    Warning("not yet implemented");
+    std::string dir = std::getenv("HOME");
+    dir += "/.links/";
+
+    // could be upgraded by an automatic check for every older version but for now, i'll just go with this as there is only 2 versions
+    if (checkLocation(dir+"database-1.0.db")) {
+        Database::Copy(dir+"database-1.0.db", 1);
+
+        std::filesystem::remove(dir+"database-1.0.db");
+
+        std::cout << "successfully upgraded database from \""+dir+"database-1.0.db\" !" << std::endl;
+    }
+}
+
+bool Application::checkLocation(std::string path) {
+    if (!std::filesystem::exists(path))
+        return false;
+
+    if (std::filesystem::path(path).extension() != ".db")
+        return false;
+    
+    return true;
 }
 
 void Application::commandList() {
@@ -390,11 +411,11 @@ void Application::commandNew() {
         std::string o = buffer.at(3);
         
         for (int i = 0; i < 5; i++)
-            if (o[i] == '0')
+            if (o[i] == '1')
                 option[i] = true;
     }
 
-    bool success = Database::Add(name, link, option[0], option[1], option[2], option[3], option[4]);
+    bool success = Database::Insert(name, link, option[0], option[1], option[2], option[3], option[4]);
     if (!success)
         Error("link referencing failed");
 }
@@ -445,9 +466,9 @@ void Application::commandSet() {
     else if (cmd == "-c") {
         std::string s = buffer.at(3);
 
-        if (s == "true" || s == "0" || s == "t")
+        if (s == "true" || s == "1" || s == "t")
             Database::SetChatroom(name, true);
-        else if (s == "false" || s == "1" || s == "f")
+        else if (s == "false" || s == "0" || s == "f")
             Database::SetChatroom(name, false);
         else
             Error("invalid value \""+s+"\"");
@@ -455,9 +476,9 @@ void Application::commandSet() {
     else if (cmd == "-f") {
         std::string s = buffer.at(3);
 
-        if (s == "true" || s == "0" || s == "t")
+        if (s == "true" || s == "1" || s == "t")
             Database::SetForum(name, true);
-        else if (s == "false" || s == "1" || s == "f")
+        else if (s == "false" || s == "0" || s == "f")
             Database::SetForum(name, false);
         else
             Error("invalid value \""+s+"\"");
@@ -465,9 +486,9 @@ void Application::commandSet() {
     else if (cmd == "-lib") {
         std::string s = buffer.at(3);
 
-        if (s == "true" || s == "0" || s == "t")
+        if (s == "true" || s == "1" || s == "t")
             Database::SetLibrary(name, true);
-        else if (s == "false" || s == "1" || s == "f")
+        else if (s == "false" || s == "0" || s == "f")
             Database::SetLibrary(name, false);
         else
             Error("invalid value \""+s+"\"");
@@ -475,9 +496,9 @@ void Application::commandSet() {
     else if (cmd == "-s") {
         std::string s = buffer.at(3);
 
-        if (s == "true" || s == "0" || s == "t")
+        if (s == "true" || s == "1" || s == "t")
             Database::SetScam(name, true);
-        else if (s == "false" || s == "1" || s == "f")
+        else if (s == "false" || s == "0" || s == "f")
             Database::SetScam(name, false);
         else
             Error("invalid value \""+s+"\"");
@@ -485,9 +506,9 @@ void Application::commandSet() {
     else if (cmd == "-w") {
         std::string s = buffer.at(3);
 
-        if (s == "true" || s == "0" || s == "t")
+        if (s == "true" || s == "1" || s == "t")
             Database::SetWiki(name, true);
-        else if (s == "false" || s == "1" || s == "f")
+        else if (s == "false" || s == "0" || s == "f")
             Database::SetWiki(name, false);
         else
             Error("invalid value \""+s+"\"");

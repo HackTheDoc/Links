@@ -14,10 +14,11 @@ public:
     static bool Exist();
 
     static void Create();
+    static void Copy(std::string p, int v);
     static std::vector<std::string> List(bool chatroom, bool forum, bool library, bool scam, bool wiki);
     static int Size();
     static std::string Get(std::string name);
-    static bool Add(std::string name, std::string link, bool chatroom, bool forum, bool library, bool scam, bool wiki);
+    static bool Insert(std::string name, std::string link, bool chatroom, bool forum, bool library, bool scam, bool wiki);
     static bool Remove(std::string name);
     static void SetLink(std::string name, std::string link);
     static void SetChatroom(std::string name, bool scam);
@@ -25,4 +26,10 @@ public:
     static void SetLibrary(std::string name, bool scam);
     static void SetScam(std::string name, bool scam);
     static void SetWiki(std::string name, bool scam);
+
+private:
+    static bool HaveLinksTable(std::string p);
+    static bool HaveCorrectParams(std::string p);
+
+    static void Copy_V1(std::string p);
 };

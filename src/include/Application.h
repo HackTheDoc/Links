@@ -76,4 +76,5 @@ private:
     void commandSet();
 
     void commandUpgrade();
+    bool checkLocation(std::string path);
 };

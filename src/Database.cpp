@@ -28,52 +28,9 @@ bool Database::Exist() {
     if (std::filesystem::path(path).extension() != ".db")
         return false;
     
-    // opening the db
-    if (sqlite3_open(path.c_str(), &db)) {
-        sqlite3_close(db);
+    if (!HaveLinksTable(path) || !HaveCorrectParams(path))
         return false;
-    }
 
-    // check table existence
-    const char* query = "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'links';";
-    sqlite3_stmt* stmt;
-    bool flag = false;
-    int rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
-    if (rc == SQLITE_OK) {
-        rc = sqlite3_step(stmt);
-        if (rc == SQLITE_ROW) {
-            flag = true;
-        }
-        sqlite3_finalize(stmt);
-    }
-    if (!flag) {
-        sqlite3_close(db);
-        return false;
-    }
-    
-    // check columns
-    query = "PRAGMA table_info('links');";
-    std::vector<std::string> toCheck = {"id", "name", "link", "scam"};
-    std::vector<std::string> columns;
-    rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
-
-    if (rc == SQLITE_OK) {
-        while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-            const unsigned char* c = sqlite3_column_text(stmt, 1);
-            if (c != nullptr) {
-                columns.push_back(reinterpret_cast<const char*>(c));
-            }
-        }
-        sqlite3_finalize(stmt);
-    }
-
-    sqlite3_close(db);
-
-    if (columns.size() != toCheck.size()) return false;
-    for (int i = 0; i < (int)toCheck.size(); i++) {
-        if (columns[i] != toCheck[i])
-            return false;
-    }
     return true;
 }
 
@@ -101,6 +58,17 @@ void Database::Create() {
     }
 
     sqlite3_close(db);
+}
+
+void Database::Copy(std::string p, int v) {
+    switch (v) {
+    case 1:
+        Copy_V1(p);
+        break;
+    default:
+        Application::Error("nothing to update");
+        break;
+    }
 }
 
 std::vector<std::string> Database::List(bool chatroom, bool forum, bool library, bool scam, bool wiki) {
@@ -192,7 +160,7 @@ std::string Database::Get(std::string name) {
     return data;
 }
 
-bool Database::Add(std::string name, std::string link, bool chatroom, bool forum, bool library, bool scam, bool wiki) {
+bool Database::Insert(std::string name, std::string link, bool chatroom, bool forum, bool library, bool scam, bool wiki) {
     int rc = sqlite3_open(path.c_str(), &db);
     if (rc != SQLITE_OK)
         return false;
@@ -366,6 +334,91 @@ void Database::SetWiki(std::string name, bool value) {
     }
     
     sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
+}
+
+bool Database::HaveLinksTable(std::string p) {
+    if (sqlite3_open(p.c_str(), &db)) {
+        sqlite3_close(db);
+        return false;
+    }
+
+    const char* query = "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'links';";
+    sqlite3_stmt* stmt;
+    bool flag = false;
+    int rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+    if (rc == SQLITE_OK) {
+        rc = sqlite3_step(stmt);
+        if (rc == SQLITE_ROW) {
+            flag = true;
+        }
+        sqlite3_finalize(stmt);
+    }
+    if (!flag) {
+        sqlite3_close(db);
+        return false;
+    }
+
+    sqlite3_close(db);
+
+    return true;
+}
+
+bool Database::HaveCorrectParams(std::string p) {
+    if (sqlite3_open(p.c_str(), &db)) {
+        sqlite3_close(db);
+        return false;
+    }
+
+    const char* query = "PRAGMA table_info('links');";
+    sqlite3_stmt* stmt;
+    std::vector<std::string> toCheck = {"id", "name", "link", "chatroom", "forum", "library", "scam", "wiki"};
+    std::vector<std::string> columns;
+    int rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
+
+    if (rc == SQLITE_OK) {
+        while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+            const unsigned char* c = sqlite3_column_text(stmt, 1);
+            if (c != nullptr) {
+                columns.push_back(reinterpret_cast<const char*>(c));
+            }
+        }
+        sqlite3_finalize(stmt);
+    }
+
+    sqlite3_close(db);
+
+    if (columns.size() != toCheck.size()) return false;
+    for (int i = 0; i < (int)toCheck.size(); i++) {
+        if (columns[i] != toCheck[i])
+            return false;
+    }
+    return true;
+}
+
+void Database::Copy_V1(std::string p) {
+    if (!HaveLinksTable(p)) {
+        Application::Error("located a database at \""+p+"\" but table 'links' not found");
+        return;
+    }
+
+    sqlite3_open(p.c_str(), &db);
+
+    const char* query = "SELECT name, link, scam FROM links";
+    sqlite3_stmt* stmt;
+    sqlite3_prepare(db, query, -1, &stmt, nullptr);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        std::string name = (const char*)sqlite3_column_text(stmt, 0);
+        std::string link = (const char*)sqlite3_column_text(stmt, 1);
+        int scam = sqlite3_column_int(stmt, 2);
+
+        if (Get(name) != "")
+            continue;
+        else
+            Insert(name, link, false, false, false, scam, false);
+    }
 
     sqlite3_close(db);
 }
