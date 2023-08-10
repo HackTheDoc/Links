@@ -15,6 +15,9 @@ const std::map<std::string, Application::Command> Application::STRING_TO_COMMAND
     // terminal cmds
     {"help"     , Application::Command::HELP    },
 
+    {"version"  , Application::Command::VERSION },
+    {"ver"      , Application::Command::VERSION },
+
     {"exit"     , Application::Command::EXIT    },
     
     {"clear"    , Application::Command::CLEAR   },
@@ -88,6 +91,9 @@ void Application::eval(std::string input) {
     switch (c) {
     case Application::Command::HELP:
         commandHelp();
+        break;
+    case Application::Command::VERSION:
+        commandVersion();
         break;
     case Application::Command::EXIT:
         commandExit();
@@ -206,6 +212,9 @@ void Application::commandHelp() {
             std::cout << "help              List of commands"                           << std::endl;
             std::cout << "help <command>    Display help of a specific command"         << std::endl;
             break;
+        case Application::Command::VERSION:
+            std::cout << "version           Get the current version of the application" << std::endl;
+            break;
         case Application::Command::EXIT:
             std::cout << "exit              Close the application"                      << std::endl;
             break;
@@ -265,6 +274,7 @@ void Application::commandHelp() {
     std::cout << "Command:"                     << std::endl;
     std::cout << "  help"                       << std::endl;
     std::cout << "  help <command>"             << std::endl;
+    std::cout << "  version"                    << std::endl;
     std::cout << "  exit"                       << std::endl;
     std::cout << "  clear"                      << std::endl;
 
@@ -285,6 +295,10 @@ void Application::commandHelp() {
     std::cout << "             -lib <value>"    << std::endl;
     std::cout << "             -s <value>"      << std::endl;
     std::cout << "             -w <value>"      << std::endl;
+}
+
+void Application::commandVersion() {
+    std::cout << "links " << version << std::endl;
 }
 
 void Application::commandExit() {

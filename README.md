@@ -5,17 +5,24 @@ CMD application to store and get links to numerous websites.
 ## Table of Content
 
 - [General info](#general-info)
+- [Features](#features)
 - [Technologies](#technologies)
 - [Setup](#setup)
-- [Features](#features)
 - [Authors](#authors)
 
 ## General info
 
 This project is a database dedicated to the storage of websites links.
-It alows you to store a link and mark them as scams or not.
 
-The program won't be able to copy links to the clipboard if xclip isn't installed.
+It only work on linux, as this is where I will be using it and it has been designed for personal use.
+If you want to add new features or to use it on another plateform, feel free to contact me.
+
+## Features
+
+- register and remove links
+- get link directly in your copyboard
+- possibility to mark link (chatroom, forum, library, scam, wiki)
+- list link depending on their affectation (see previous point)
 
 ## Technologies
 
@@ -23,12 +30,21 @@ Project is created with:
 
 - CPP
 - SQLITE 3
-- DOCOPT
-- xclip (linux neccessary)
+- xclip (<mark>necessary</mark>)
 
 ## Setup
 
-To run this project, install locally the `app` folder and run it in your terminal using:
+### Requirements
+
+The program use the `xclip` package to run, in order to install it run the following command (may require **root** mode) :
+
+```bash
+$ apt install xclip
+```
+
+### Installation
+
+To run this project, install the file located in the `app` folder and run it in your terminal using:
 
 ```bash
 $ cd path/to/app
@@ -41,25 +57,9 @@ To be able to run the program from everywhere in your terminal, you can choose o
 
 - Add the directory containing your executable to the PATH.
 
-### Extra *(linux users only)*
-
-To install `xclip`, you can run the following command:
-
-```bash
-$ apt install xclip
-```
-
-## Features
-
-- get link directly in your copyboard
-- register new link
-- remove old link
-- mark a link as a scam
-
 ### To do
 
-- clipboard copy without xclip (linux)
-- implement implement a version for windows and apple ? :)
+- make a linux package
 
 ## Authors
 

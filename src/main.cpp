@@ -1,5 +1,4 @@
 #include <iostream>
-#include <docopt/docopt.h>
 
 #include "include/Application.h"
 
@@ -17,11 +16,25 @@ R"(Links.
 )";
 
 int main(int argc, const char* argv[]) {
-    std::map<std::string, docopt::value> args
-        = docopt::docopt(USAGE,
-                        {argv + 1, argv + argc},
-                        true,
-                        "links " + Application::version);
+    if (argc > 1) {
+        std::string arg = argv[1];
+        if (arg == "-v" || arg == "--version") {
+            std::cout << "links " + Application::version << std::endl;
+            return 0;
+        }
+        else if (arg == "-h" || arg == "--help") {
+            std::cout << "Usage:"                                   << std::endl;
+            std::cout << "  links [option]"                         << std::endl;
+
+            std::cout << std::endl;
+
+            std::cout << "Options:"                                 << std::endl;
+            std::cout << "  -h or --help    Display this text."     << std::endl;
+            std::cout << "  -v or --version Show current version."  << std::endl;
+
+            return 0;
+        }
+    }
 
     app.start();
 

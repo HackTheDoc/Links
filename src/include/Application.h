@@ -9,6 +9,7 @@ public:
     enum Command {
         UNKNOWN,
         HELP,
+        VERSION,
         EXIT,
         CLEAR,
 
@@ -64,6 +65,7 @@ private:
     // all the functions associated to a specific command
 
     void commandHelp();
+    void commandVersion();
     void commandExit();
     void commandClear();
 
